@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "target": "es2016",
+     "lib": ["ES2020","dom"],        
+    "module": "esnext", 
+    "rootDir": "src",  
+    "moduleResolution": "node",
+    "declaration": true, 
+    "declarationMap": false,
+    "outDir": "dist",
+    "esModuleInterop": true,       
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
