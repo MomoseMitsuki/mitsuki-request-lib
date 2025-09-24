@@ -146,7 +146,7 @@ export interface RequestOptions {
 }
 ```
 
-## 装饰器（内置）
+## 上层功能使用
 
 ### 1) 请求重试 `createRetryRequestor(options, base?)`
 
@@ -248,5 +248,6 @@ export interface RequestOptions {
 可在 request-store/index 内更改导入，使用其他存储方案（内存、cookie。indexedDB）
 
 同样使用 DIP 依赖倒置原则，新增存储方案只需要 新增 xxx-imp.ts 实现并导入即可
+
 
 
