@@ -60,42 +60,32 @@ inject(
 );
 ```
 
-### 3) 上层功能 service
+### 3) 使用层面
 
 ```typescript
-import {
-  useRequestor,
-  createRetryRequestor,
-  createCacheRequestor,
-  createSerialRequestor,
-  createParallelRequestor,
-  createIdempotentRequestor,
-} from "./request-core";
+import { createFetchRequestor } from "../request-imp/request-fetch-imp";
+// import { createAxiosRequestor } from "../request-imp/request-axios-imp";
+// import { createXHRRequestor } from "../request-imp/request-xhr-imp";
+import { inject,useRequestor,createRetryRequestor,createCacheRequestor,createSerialRequestor,createParallelRequestor,createIdempotentRequestor, } from "../request-core/index";
 
-const base = useRequestor();
 
-const req = createCacheRequestor({
-  key: ({ url, method, options }) =>
-    `${method}:${url}?${JSON.stringify(options?.params || {})}`,
-  duration: 60_000,
-  persist: true,
-})(
-  createSerialRequestor(
-    (url) => new URL(url, "http://x").pathname,
-    createParallelRequestor(
-      8,
-      createRetryRequestor({ max: 3, base: 300 }, base)
-    )
-  )
-);
+// inject(createAxiosRequestor({ baseURL:"http://localhost:3000" }))
+// inject(createXHRRequestor({ baseURL:"http://localhost:3000" }))
+inject(createFetchRequestor({ baseURL:"http://localhost:3000" }))
+inject(createCacheRequestor({
+    key:(config) => config.url,
+    duration:1000,
+    persist:false,
+}))
+inject(createRetryRequestor({ max:3 }))
+
+const req = useRequestor()
 
 // 发起请求
 const users = await req
   .get("/users", { params: { page: 1 } })
   .then((r) => r.json());
 ```
-
-> 说明：`createCacheRequestor(options)` 返回一个**工厂**（或你项目里的实现直接返回 `Requestor`），上面示例展示装饰器组合的典型顺序。若你的实现已直接返回 `Requestor`，把上一段改为链式传入 `base` 即可（你已有这类实现）。
 
 ---
 
@@ -139,13 +129,13 @@ export interface RequestOptions {
   headers?: Record<string,string>;
   params?: Record<string, any>;
   body?: any;
-  signal?: AbortSignal;   // 统一取消
-  timeoutMs?: number;     // 统一超时（装饰器处理）
-  [k: string]: any;       // 透传元信息
+  signal?: AbortSignal;
+  timeoutMs?: number;
+  [key: string]: any;
 }
 ```
 
-## 上层功能使用
+## 上层功能
 
 ### 1) 请求重试 `createRetryRequestor(options, base?)`
 
@@ -247,6 +237,7 @@ export interface RequestOptions {
 可在 request-store/index 内更改导入，使用其他存储方案（内存、cookie。indexedDB）
 
 同样使用 DIP 依赖倒置原则，新增存储方案只需要 新增 xxx-imp.ts 实现并导入即可
+
 
 
 
