@@ -17,7 +17,7 @@
 pnpm install
 ```
 
-### 2) 注入底层实现（任选其一）
+### 2) xhr/axios/fetch 实现层
 
 **fetch**
 
@@ -61,7 +61,7 @@ inject(
 );
 ```
 
-### 3) 叠加能力
+### 3) 上层功能 service
 
 ```typescript
 import {
@@ -100,13 +100,25 @@ const users = await req
 
 ---
 
-## 架构与核心概念
+## 架构
 
-### 分层
+### 三层架构
 
 - **request-imp**：提供请求基本功能（xhr/axios/fetch）
 - **request-core**：提供网络上层控制，比如请求串行、请求并行、请求重试、请求防重等功能
 - **request-bus**：开发者自用,利用 core 提供的 inject 和 实现层 的 createRequestor 封装自定义请求
+
+我们基于DIP（Dependence Inversion Principle，依赖倒置原则），彻底将`request-core`和请求的实现解耦，而`typescript`的类型系统让这一切的落地成为了可能。
+
+同时也满足软件设计的开闭原则（对修改关闭，对新增开放）
+
+### 改变实现层
+
+```typescript
+- import { requestor } from 'request-axios-imp';
++ import { requestor } from 'request-fetch-imp';
+inject(requestor);
+```
 
 ### 核心接口
 
@@ -236,4 +248,5 @@ export interface RequestOptions {
 可在 request-store/index 内更改导入，使用其他存储方案（内存、cookie。indexedDB）
 
 同样使用 DIP 依赖倒置原则，新增存储方案只需要 新增 xxx-imp.ts 实现并导入即可
+
 
