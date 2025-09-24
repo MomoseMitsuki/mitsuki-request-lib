@@ -111,6 +111,7 @@ const users = await req
 ### 核心接口
 
 ```typescript
+// request-core
 export interface Requestor {
   request(url: string, method: Method, options?: RequestOptions): Promise<ResponseLike>;
   get/delete/head/options/post/put/patch(...)
@@ -148,6 +149,7 @@ export interface RequestOptions {
 - **存储接口**
 
   ```typescript
+  // request-store
   export interface CacheStore {
     has(key: string): Promise<boolean>;
     get<T>(key: string): Promise<T>;
@@ -159,15 +161,15 @@ export interface RequestOptions {
 
 - **选项**
 
-  - `key(config)`: 生成缓存键（强烈建议规范化 URL/params）
+  - `key(config)`: 生成缓存键
   - `persist`: 使用持久化仓库（由 `useCacheStore(persist)` 决定）
-  - `duration`: TTL（ms）。如提供 `isValid` 则忽略 TTL
+  - `duration`: TTL（ms）。如提供 isValid 则忽略
   - `isValid(key, config)`: 自定义有效性（版本/租户/场景）
   - `toPlain(resp)`: 提取可缓存的纯数据（默认 `resp.json()`）
 
 - **行为**
 
-  - 命中缓存 → `beforeRequest` 返回 `ResponseLike(status=299)` 短路
+  - 使用缓存 → `beforeRequest` 返回 `ResponseLike(status=299)` 短路
   - 响应 2xx → `responseBody` 写入缓存（双键：`<key>#data` 与 `<key>#ts`）
 
 - **示例**
@@ -176,7 +178,7 @@ export interface RequestOptions {
   const req = createCacheRequestor({
     key: ({ url, method, options }) =>
       `${method}:${url}?${JSON.stringify(options?.params || {})}`,
-    duration: 5 * 60_000,
+    duration: 60000,
     persist: true,
   });
   ```
@@ -185,9 +187,9 @@ export interface RequestOptions {
 
 - 利用缓存实现“相同请求不重复提交”（可设置短 TTL 或只做在途合并）
 
-- **默认 key 生成建议**（若不用 `spark-md5`）：
+- **默认 key 生成**（若不用 `spark-md5`）：
 
-  - 规范化 `method + 完整 URL(含 query) + 重要 headers + 体` → 稳定 JSON → FNV-1a 或 MD5
+  - 请求方法 + url + 请求头 + 请求体 组成 key 键，内部使用 createCacheRequestor 进行缓存，实现请求的幂等
 
 - **示例**
 
@@ -228,4 +230,10 @@ export interface RequestOptions {
 
 ## Mitsuki-store-lib
 
-默认持久化存储在 localStorage，非持久化存储在 sessionStorage 内，可在 request-store/interface 内更改导入，使用其他存储方案（内存、cookie。indexedDB）
+默认持久化存储在 localStorage
+非持久化存储在 sessionStorage 内
+
+可在 request-store/index 内更改导入，使用其他存储方案（内存、cookie。indexedDB）
+
+同样使用 DIP 依赖倒置原则，新增存储方案只需要 新增 xxx-imp.ts 实现并导入即可
+
