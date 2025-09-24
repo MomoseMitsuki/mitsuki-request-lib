@@ -137,7 +137,7 @@ export interface RequestOptions {
 
 ## 上层功能
 
-### 1) 请求重试 `createRetryRequestor(options, base?)`
+### 1. 请求重试 `createRetryRequestor(options, base?)`
 
 - **示例**
 
@@ -145,7 +145,7 @@ export interface RequestOptions {
   const req = createRetryRequestor({ max: 3, base: 300 });
   ```
 
-### 2) 请求缓存 `createCacheRequestor(options)`
+### 2. 请求缓存 `createCacheRequestor(options)`
 
 - **存储接口**
 
@@ -184,7 +184,7 @@ export interface RequestOptions {
   });
   ```
 
-### 3) 请求幂等 `createIdempotentRequestor()`
+### 3. 请求幂等 `createIdempotentRequestor()`
 
 - 利用缓存实现“相同请求不重复提交”（可设置短 TTL 或只做在途合并）
 
@@ -198,7 +198,7 @@ export interface RequestOptions {
   const req = createIdempotentRequestor(); // 内部使用 createCacheRequestor({ persist:false })
   ```
 
-### 4) 请求串行 `createSerialRequestor(key, base?)`
+### 4. 请求串行 `createSerialRequestor(key, base?)`
 
 - 按 `key(url, method, options)` 对请求排队，**同 key 顺序执行**，不同 key 并发
 
@@ -208,7 +208,7 @@ export interface RequestOptions {
   const req = createSerialRequestor((url) => new URL(url, "http://x").pathname);
   ```
 
-### 5) 请求并发限流 `createParallelRequestor(limit = 6, base?)`
+### 5. 请求并发限流 `createParallelRequestor(limit = 6, base?)`
 
 - 全局/实例级信号量：限制同时在途请求数
 
@@ -237,6 +237,7 @@ export interface RequestOptions {
 可在 request-store/index 内更改导入，使用其他存储方案（内存、cookie。indexedDB）
 
 同样使用 DIP 依赖倒置原则，新增存储方案只需要 新增 xxx-imp.ts 实现并导入即可
+
 
 
 
