@@ -1,0 +1,23 @@
+{
+	"name": "mitsuki-request-lib",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsup",
+		"test": "tsup && node ./__test__/server.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"devDependencies": {
+		"@types/spark-md5": "^3.0.5",
+		"terser": "^5.44.1",
+		"tsup": "^8.5.0",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"axios": "^1.13.2",
+		"spark-md5": "^3.0.2"
+	}
+}
