@@ -12,7 +12,11 @@ class AxiosRequestor extends BaseRequestor implements Requestor {
 		options.pathname = url;
 		const resp = await axios.request(requestConfig);
 		const respLike = this.normalizeResponse(resp);
-		return respLike;
+		if (respLike.ok) {
+			return Promise.resolve(respLike);
+		} else {
+			return Promise.reject(respLike);
+		}
 	}
 	constructor() {
 		super();
