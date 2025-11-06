@@ -98,13 +98,13 @@ export const getArticles = (() => {
 
 由于我们使用的是模板模式，当将来如果实现改变时，无须对request-core做任何改动，仅需新增实现并改变依赖即可。
 
-比如，将来如果改为使用 xhr 完成请求，仅需做以下改动：
+比如，将来如果改为使用 axios 完成请求，仅需做以下改动：
 
 改变```request-bus```的依赖
 
 ```typescript
-- import { requestor } from 'request-axios-imp';
-+ import { requestor } from 'request-fetch-imp';
+- import { requestor } from 'request-fetch-imp';
++ import { requestor } from 'request-axios-imp';
 inject(requestor);
 const req = useRequestor()
 ```
